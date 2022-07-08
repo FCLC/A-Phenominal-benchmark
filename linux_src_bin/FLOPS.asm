@@ -1,6 +1,10 @@
 global FLOPS_SSE
 global FLOPS_AVX
 global FLOPS_AVX512
+;global FLOPS_fp16
+global FLOPS_AVX512fp16
+
+
 
 section .text
 
@@ -35,7 +39,7 @@ section .text
 	vaddps ymm15, ymm15, ymm0
 
 
-		
+
 %endmacro;
 
 
@@ -74,6 +78,45 @@ section .text
 	vaddps zmm31, zmm31, zmm0
 
 %endmacro
+; For AVX512 capable CPU's
+
+
+%macro ADD_AVX512_FP16 0
+        vaddph zmm1, zmm1, zmm0
+        vaddph zmm2, zmm2, zmm0
+        vaddph zmm3, zmm3, zmm0
+        vaddph zmm4, zmm4, zmm0
+        vaddph zmm5, zmm5, zmm0
+        vaddph zmm6, zmm6, zmm0
+        vaddph zmm7, zmm7, zmm0
+        vaddph zmm8, zmm8, zmm0
+        vaddph zmm9, zmm9, zmm0
+        vaddph zmm10, zmm10, zmm0
+        vaddph zmm11, zmm11, zmm0
+        vaddph zmm12, zmm12, zmm0
+        vaddph zmm13, zmm13, zmm0
+        vaddph zmm14, zmm14, zmm0
+        vaddph zmm15, zmm15, zmm0
+        vaddph zmm16, zmm16, zmm0
+        vaddph zmm17, zmm17, zmm0
+        vaddph zmm18, zmm18, zmm0
+        vaddph zmm19, zmm19, zmm0
+        vaddph zmm20, zmm20, zmm0
+        vaddph zmm21, zmm21, zmm0
+        vaddph zmm22, zmm22, zmm0
+        vaddph zmm23, zmm23, zmm0
+        vaddph zmm24, zmm24, zmm0
+        vaddph zmm25, zmm25, zmm0
+        vaddph zmm26, zmm26, zmm0
+        vaddph zmm27, zmm27, zmm0
+        vaddph zmm28, zmm28, zmm0
+        vaddph zmm29, zmm29, zmm0
+        vaddph zmm30, zmm30, zmm0
+        vaddph zmm31, zmm31, zmm0
+
+%endmacro
+
+
 
 FLOPS_SSE:
 	push rbx
@@ -246,4 +289,71 @@ FLOPS_AVX512:
 	pop rdi
 	pop rbx
 	ret
+
+
+FLOPS_AVX512fp16:
+        push rbx
+        push rdi
+        push rsi
+        push rbp
+        push r11
+        push r8
+        push r9
+        push r10
+        push r12
+
+        mov r12, (1024*1024*1024)/(128 * 32)            ; x32 for AVX512
+
+        ; Set all the AVX512 regs to 0.0
+        vxorps zmm0, zmm0, zmm0
+        vxorps zmm1, zmm1, zmm1
+        vxorps zmm2, zmm2, zmm2
+        vxorps zmm3, zmm3, zmm3
+        vxorps zmm4, zmm4, zmm4
+        vxorps zmm5, zmm5, zmm5
+        vxorps zmm6, zmm6, zmm6
+        vxorps zmm7, zmm7, zmm7
+        vxorps zmm8, zmm8, zmm8
+        vxorps zmm9, zmm9, zmm9
+        vxorps zmm10, zmm10, zmm10
+        vxorps zmm11, zmm11, zmm11
+        vxorps zmm12, zmm12, zmm12
+        vxorps zmm13, zmm13, zmm13
+        vxorps zmm14, zmm14, zmm14
+        vxorps zmm15, zmm15, zmm15
+        vxorps zmm16, zmm16, zmm16
+        vxorps zmm17, zmm17, zmm17
+        vxorps zmm18, zmm18, zmm18
+        vxorps zmm19, zmm19, zmm19
+        vxorps zmm20, zmm20, zmm20
+        vxorps zmm21, zmm21, zmm21
+        vxorps zmm22, zmm22, zmm22
+        vxorps zmm23, zmm23, zmm23
+        vxorps zmm24, zmm24, zmm24
+        vxorps zmm25, zmm25, zmm25
+        vxorps zmm26, zmm26, zmm26
+        vxorps zmm27, zmm27, zmm27
+        vxorps zmm28, zmm28, zmm28
+        vxorps zmm29, zmm29, zmm29
+        vxorps zmm30, zmm30, zmm30
+        vxorps zmm31, zmm31, zmm31
+
+
+.LoopHead:
+        ADD_AVX512_FP16
+        ADD_AVX512_FP16
+
+        dec r12
+        jnz .LoopHead
+
+        pop r12
+        pop r10
+        pop r9
+        pop r8
+        pop r11
+        pop rbp
+        pop rsi
+        pop rdi
+        pop rbx
+        ret
 
